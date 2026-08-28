@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: todolist
+  profiles:
+    active: local
+  jackson:
+    time-zone: Asia/Seoul
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+
+server:
+  port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:local-dev-secret-key-change-this-in-production-must-be-32-bytes-min}
+  expiration: 86400000 # 24시간 (ms)
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

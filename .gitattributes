@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+# Windows 전용 스크립트
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# 셸 스크립트 / Maven Wrapper 는 반드시 LF
+*.sh text eol=lf
+backend/mvnw text eol=lf
+backend/mvnwDebug text eol=lf
+
+# 바이너리
+*.png binary
+*.jpg binary

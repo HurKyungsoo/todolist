@@ -1,0 +1,25 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Maven Wrapper (only-script 방식이라 jar 없음, 스크립트는 커밋) ###
+.mvn/wrapper/maven-wrapper.jar
+
+### 환경변수 / 시크릿 ###
+.env
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Mac ###
+.DS_Store
+
+*.log

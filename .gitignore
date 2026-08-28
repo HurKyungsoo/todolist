@@ -1,0 +1,15 @@
+# 환경변수 / 시크릿
+.env
+.env.*
+!.env.example
+
+# OS / 에디터
+.DS_Store
+*.log
+.idea/
+.vscode/
+
+# 하위 모듈 빌드 산출물은 각 모듈의 .gitignore 에서도 관리됨
+backend/target/
+frontend/node_modules/
+frontend/dist/
