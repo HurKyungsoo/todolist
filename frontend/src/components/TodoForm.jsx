@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toInputDateTime, toServerDateTime } from '../utils/date'
+import DateTimePicker from './DateTimePicker'
 
 const EMPTY = { title: '', content: '', dueDate: '', category: '' }
 
@@ -48,16 +49,18 @@ export default function TodoForm({ initial, onSubmit, onCancel, submitting }) {
         <textarea name="content" value={form.content} onChange={change} rows={3} />
       </label>
 
-      <div className="field-row">
-        <label className="field">
-          <span>마감일</span>
-          <input type="datetime-local" name="dueDate" value={form.dueDate} onChange={change} />
-        </label>
-        <label className="field">
-          <span>카테고리</span>
-          <input name="category" value={form.category} onChange={change} maxLength={50} placeholder="업무 / 개인 …" />
-        </label>
+      <div className="field">
+        <span>마감일</span>
+        <DateTimePicker
+          value={form.dueDate}
+          onChange={(v) => setForm((f) => ({ ...f, dueDate: v }))}
+        />
       </div>
+
+      <label className="field">
+        <span>카테고리</span>
+        <input name="category" value={form.category} onChange={change} maxLength={50} placeholder="업무 / 개인 …" />
+      </label>
 
       <div className="todo-form__actions">
         <button type="button" className="btn btn--ghost" onClick={onCancel} disabled={submitting}>

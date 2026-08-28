@@ -389,14 +389,67 @@ select.input--sm { padding-right: 26px; }
   overflow: hidden;
 }
 .todo-item__meta {
-  margin-top: 7px;
+  margin-top: 9px;
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: var(--text-3);
 }
-.todo-item__meta .dot { width: 2px; height: 2px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+
+/* 마감일 칩 */
+.due {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.005em;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  transition: background 0.16s var(--ease), color 0.16s var(--ease), border-color 0.16s var(--ease);
+}
+.due__icon { width: 13px; height: 13px; opacity: 0.75; flex-shrink: 0; }
+.due__date { white-space: nowrap; }
+.due__sep {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  flex-shrink: 0;
+}
+.due__left { font-weight: 700; white-space: nowrap; }
+
+.due--none { color: var(--text-3); border-style: dashed; }
+.due--none .due__icon { opacity: 0.55; }
+.due--soon    { background: var(--warn-weak);   color: var(--warn);    border-color: transparent; }
+.due--overdue { background: var(--danger-weak); color: var(--danger);  border-color: transparent; }
+.due--done    { opacity: 0.6; text-decoration: line-through; text-decoration-color: var(--text-3); }
+
+/* 임박/초과 상태의 맥동 인디케이터 */
+.due__pulse {
+  position: relative;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.due__pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  animation: due-pulse 1.9s var(--ease) infinite;
+}
+@keyframes due-pulse {
+  0%   { transform: scale(0.5); opacity: 0.7; }
+  70%  { opacity: 0; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
 
 /* hover 시 나타나는 액션 */
 .todo-item__actions {
@@ -494,6 +547,212 @@ select.input--sm { padding-right: 26px; }
 }
 .todo-form__title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 18px; }
 .todo-form__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+/* ============================================================
+   날짜/시간 선택기 (DateTimePicker)
+   ============================================================ */
+.dtp { position: relative; }
+
+/* 퀵 칩 */
+.dtp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.dtp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.14s var(--ease), color 0.14s var(--ease), border-color 0.14s var(--ease);
+}
+.dtp-chip:hover { background: var(--surface-2); color: var(--text); }
+.dtp-chip:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-chip.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+.dtp-chip--cal { color: var(--text); }
+.dtp-chip__icon { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* 선택된 값 — 날짜 칩 + 시각 입력 */
+.dtp-value {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 9px;
+  animation: item-in 0.2s var(--ease) both;
+}
+.dtp-value__date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 5px 11px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-full);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.14s var(--ease), border-color 0.14s var(--ease);
+}
+.dtp-value__date:hover { background: var(--surface-2); }
+.dtp-value__date:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-value__icon { width: 13px; height: 13px; color: var(--text-3); flex-shrink: 0; }
+.field input.dtp-value__time {
+  width: 132px;
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.dtp-panel {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 288px;
+  max-width: min(288px, calc(100vw - 32px));
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+  animation: pop 0.14s var(--ease);
+}
+
+.dtp-cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.dtp-cal__title {
+  padding: 4px 8px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.14s var(--ease);
+}
+.dtp-cal__title:hover { background: var(--surface-2); }
+.dtp-cal__title:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-nav {
+  display: grid;
+  place-items: center;
+  width: 26px; height: 26px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.14s var(--ease);
+}
+.dtp-nav:hover { background: var(--surface-2); }
+.dtp-nav:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-nav svg { width: 16px; height: 16px; }
+.dtp-nav--prev svg { transform: rotate(90deg); }
+.dtp-nav--next svg { transform: rotate(-90deg); }
+
+.dtp-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.dtp-cal__grid--dow { margin-bottom: 2px; }
+.dtp-dow {
+  display: grid;
+  place-items: center;
+  height: 24px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+.dtp-day {
+  display: grid;
+  place-items: center;
+  height: 32px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
+}
+.dtp-day:hover { background: var(--surface-2); }
+.dtp-day:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-day.is-outside { color: var(--text-3); opacity: 0.45; }
+.dtp-day.is-today { font-weight: 700; color: var(--accent); }
+.dtp-day.is-selected,
+.dtp-day.is-selected:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+/* 연·월 선택 뷰 */
+.dtp-months {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 6px 0;
+}
+.dtp-month {
+  height: 46px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s var(--ease), color 0.12s var(--ease);
+}
+.dtp-month:hover { background: var(--surface-2); }
+.dtp-month:focus-visible { outline: none; box-shadow: var(--ring); }
+.dtp-month.is-today { color: var(--accent); font-weight: 700; }
+.dtp-month.is-selected,
+.dtp-month.is-selected:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.dtp-clear {
+  margin-left: auto;
+  padding: 4px 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dtp-clear:hover { color: var(--danger); }
 
 /* ============================================================
    애니메이션

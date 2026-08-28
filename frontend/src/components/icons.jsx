@@ -26,6 +26,15 @@ export const InboxIcon = (p) => (
 export const AlertIcon = (p) => (
   <svg {...base} {...p}><circle cx="12" cy="12" r="10" /><path d="M12 8v4M12 16h.01" /></svg>
 )
+export const ClockIcon = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+)
+export const ChevronDownIcon = (p) => (
+  <svg {...base} {...p}><path d="m6 9 6 6 6-6" /></svg>
+)
+export const CalendarIcon = (p) => (
+  <svg {...base} {...p}><rect x="3" y="4.5" width="18" height="17" rx="2" /><path d="M3 10h18M8 2.5v4M16 2.5v4" /></svg>
+)
 export const LogoIcon = (p) => (
   <svg {...base} {...p}><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
 )

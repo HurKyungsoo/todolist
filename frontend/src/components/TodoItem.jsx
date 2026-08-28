@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { formatDateTime, isOverdue, timeLeftLabel } from '../utils/date'
-import { PencilIcon, TrashIcon } from './icons'
+import { formatDueDate, isOverdue, timeLeftLabel } from '../utils/date'
+import { ClockIcon, PencilIcon, TrashIcon } from './icons'
 
 export default function TodoItem({ todo, onToggle, onEdit, onDelete, busy }) {
   const overdue = isOverdue(todo)
@@ -13,6 +13,18 @@ export default function TodoItem({ todo, onToggle, onEdit, onDelete, busy }) {
     !todo.completed && overdue && 'is-overdue',
     !todo.completed && !overdue && soon && 'is-soon',
   ].filter(Boolean).join(' ')
+
+  const dueState = todo.completed
+    ? 'done'
+    : !todo.dueDate
+      ? 'none'
+      : overdue
+        ? 'overdue'
+        : soon
+          ? 'soon'
+          : 'normal'
+  const urgent = dueState === 'soon' || dueState === 'overdue'
+  const showCountdown = !!todo.dueDate && !todo.completed
 
   return (
     <li className={cls}>
@@ -29,22 +41,23 @@ export default function TodoItem({ todo, onToggle, onEdit, onDelete, busy }) {
         <div className="todo-item__head">
           <span className="todo-item__title">{todo.title}</span>
           {todo.category && <span className="tag">{todo.category}</span>}
-          {soon && !overdue && <span className="tag tag--warn">마감 임박</span>}
-          {overdue && <span className="tag tag--danger">기한 초과</span>}
         </div>
 
         {todo.content && <p className="todo-item__content">{todo.content}</p>}
 
         <div className="todo-item__meta">
-          <span>{formatDateTime(todo.dueDate)}</span>
-          {todo.dueDate && !todo.completed && (
-            <>
-              <span className="dot" />
-              <span className={overdue ? 'text-danger' : soon ? 'text-warn' : ''}>
-                {timeLeftLabel(todo.dueDate)}
-              </span>
-            </>
-          )}
+          <span className={`due due--${dueState}`}>
+            {urgent
+              ? <span className="due__pulse" aria-hidden="true" />
+              : <ClockIcon className="due__icon" />}
+            <span className="due__date">{formatDueDate(todo.dueDate)}</span>
+            {showCountdown && (
+              <>
+                <span className="due__sep" aria-hidden="true" />
+                <span className="due__left">{timeLeftLabel(todo.dueDate)}</span>
+              </>
+            )}
+          </span>
         </div>
       </div>
 
