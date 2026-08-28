@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { LogoIcon } from '../components/icons'
 import { toMessage } from '../api/client'
 
 export default function SignupPage() {
@@ -32,15 +33,20 @@ export default function SignupPage() {
   return (
     <div className="auth">
       <form className="auth__card" onSubmit={submit}>
-        <h1 className="auth__title">회원가입</h1>
+        <div className="auth__brand">
+          <span className="brand-mark"><LogoIcon /></span>
+          Todolist
+        </div>
+        <h1 className="auth__title">시작하기</h1>
+        <p className="auth__sub">계정을 만들면 바로 할 일을 추가할 수 있어요.</p>
 
         <label className="field">
           <span>아이디</span>
-          <input name="username" value={form.username} onChange={change} required autoFocus minLength={3} maxLength={50} />
+          <input name="username" value={form.username} onChange={change} required autoFocus minLength={3} maxLength={50} placeholder="3자 이상" />
         </label>
         <label className="field">
           <span>비밀번호</span>
-          <input type="password" name="password" value={form.password} onChange={change} required minLength={4} />
+          <input type="password" name="password" value={form.password} onChange={change} required minLength={4} placeholder="4자 이상" />
         </label>
         <label className="field">
           <span>이메일</span>

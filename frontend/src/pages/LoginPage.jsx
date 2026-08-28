@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { LogoIcon } from '../components/icons'
 import { toMessage } from '../api/client'
 
 export default function LoginPage() {
@@ -32,7 +33,12 @@ export default function LoginPage() {
   return (
     <div className="auth">
       <form className="auth__card" onSubmit={submit}>
-        <h1 className="auth__title">로그인</h1>
+        <div className="auth__brand">
+          <span className="brand-mark"><LogoIcon /></span>
+          Todolist
+        </div>
+        <h1 className="auth__title">다시 오신 걸 환영해요</h1>
+        <p className="auth__sub">계정으로 로그인하고 할 일을 이어서 관리하세요.</p>
 
         <label className="field">
           <span>아이디</span>

@@ -4,6 +4,7 @@ import Modal from '../components/Modal'
 import TodoForm from '../components/TodoForm'
 import TodoList from '../components/TodoList'
 import useTodos from '../hooks/useTodos'
+import { PlusIcon } from '../components/icons'
 import { toMessage } from '../api/client'
 import { createTodo, deleteTodo, toggleComplete, updateTodo } from '../api/todos'
 
@@ -77,7 +78,7 @@ export default function TodosPage() {
   }
 
   const handleDelete = async (todo) => {
-    if (!window.confirm(`"${todo.title}" 을(를) 삭제할까요?`)) return
+    // 삭제 확인은 TodoItem 내부 인라인 UI 에서 처리
     setBusyId(todo.id)
     setActionError('')
     try {
@@ -115,12 +116,12 @@ export default function TodosPage() {
             </select>
           </div>
           <button className="btn btn--primary" onClick={openCreate}>
-            + 새 할 일
+            <PlusIcon width={15} height={15} /> 새 할 일
           </button>
         </div>
 
         <p className="count">전체 {total}건</p>
-        {actionError && <p className="state state--error">{actionError}</p>}
+        {actionError && <p className="form-error">{actionError}</p>}
 
         <TodoList
           items={items}
