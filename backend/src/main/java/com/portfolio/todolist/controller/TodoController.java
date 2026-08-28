@@ -7,12 +7,17 @@ import com.portfolio.todolist.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * userId는 JWT 인증 정보(@AuthenticationPrincipal)에서 추출한다.
@@ -22,6 +27,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
 public class TodoController {
+
+    // 정렬 허용 필드 화이트리스트 (그 외 값은 무시하고 기본 정렬 적용 → PropertyReferenceException 방지)
+    private static final Set<String> SORTABLE = Set.of(
+            "id", "title", "dueDate", "completed", "category", "createdAt", "updatedAt");
+    private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "dueDate");
 
     private final TodoService todoService;
 
@@ -38,7 +48,7 @@ public class TodoController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Boolean completed,
             @PageableDefault(size = 10, sort = "dueDate") Pageable pageable) {
-        return ResponseEntity.ok(todoService.getTodos(principal.getId(), category, completed, pageable));
+        return ResponseEntity.ok(todoService.getTodos(principal.getId(), category, completed, sanitize(pageable)));
     }
 
     @GetMapping("/{todoId}")
@@ -65,5 +75,13 @@ public class TodoController {
                                             @PathVariable Long todoId) {
         todoService.deleteTodo(principal.getId(), todoId);
         return ResponseEntity.noContent().build();
+    }
+
+    private Pageable sanitize(Pageable pageable) {
+        List<Sort.Order> allowed = pageable.getSort().stream()
+                .filter(order -> SORTABLE.contains(order.getProperty()))
+                .toList();
+        Sort sort = allowed.isEmpty() ? DEFAULT_SORT : Sort.by(allowed);
+        return PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
     }
 }

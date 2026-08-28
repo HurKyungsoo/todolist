@@ -82,7 +82,7 @@ updated_at                     category     50
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
-| GET | `/api/todos?page=0&size=10&sort=dueDate&category=&completed=` | 목록 (Spring `Page`), 카테고리·완료여부 필터 선택 |
+| GET | `/api/todos?page=0&size=10&sort=dueDate&category=&completed=` | 목록 (Spring `Page`). `category`는 부분일치, `sort`는 허용 필드(`id,title,dueDate,completed,category,createdAt,updatedAt`)만 반영되고 그 외는 무시 |
 | GET | `/api/todos/{id}` | 단건 조회 |
 | POST | `/api/todos` | 생성 · 본문 `{ title, content, dueDate, category }` (title 필수) |
 | PUT | `/api/todos/{id}` | 수정 |

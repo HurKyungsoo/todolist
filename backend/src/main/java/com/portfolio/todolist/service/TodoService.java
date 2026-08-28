@@ -40,7 +40,7 @@ public class TodoService {
         if (category != null && !category.isBlank() && completed != null) {
             page = todoRepository.findByUser_IdAndCategoryContainingAndCompleted(userId, category, completed, pageable);
         } else if (category != null && !category.isBlank()) {
-            page = todoRepository.findByUser_IdAndCategory(userId, category, pageable);
+            page = todoRepository.findByUser_IdAndCategoryContaining(userId, category, pageable);
         } else if (completed != null) {
             page = todoRepository.findByUser_IdAndCompleted(userId, completed, pageable);
         } else {
