@@ -20,9 +20,10 @@ Spring Boot + JPA 기반 TodoList REST API. JWT 인증으로 사용자별 Todo�
 | 과제 요구사항 | 구현 |
 |---|---|
 | Todo 등록/조회/수정/삭제 | `TodoController` + `TodoService` |
-| 제목·내용·마감일·완료여부·카테고리 | `entity/Todo` |
+| 제목·내용·마감일·완료여부·카테고리·우선순위 | `entity/Todo` (`priority` 0=낮음·1=보통·2=높음) |
 | 완료 처리 | `PATCH /api/todos/{id}/complete` (토글) |
 | 마감 임박(24h) 구분 | `TodoResponseDto.dueSoon` — 미완료 && 마감까지 0~24시간이면 `true` |
+| 제목·내용 키워드 검색 | `GET /api/todos?q=` — 대소문자 무시 부분일치 (`TodoRepository.search`) |
 | 페이지네이션 | Spring `Page` / `Pageable`, 기본 size 10, `dueDate` 정렬 |
 | 사용자별 로그인 / 본인 Todo만 조회 | JWT 인증 → `@AuthenticationPrincipal`에서 userId 추출 → 조회·수정·삭제 시 소유권 재검증 |
 
@@ -62,6 +63,9 @@ password     (BCrypt)          content      TEXT
 email        unique, 100       due_date
 created_at                     completed    not null
 updated_at                     category     50
+                               priority     not null, 기본 1 (0~2)
+                               recurrence   10 (null|DAILY|WEEKLY|MONTHLY)
+                               sort_order   not null, 기본 0 (수동 정렬)
                                user_id      FK → users.id
                                created_at
                                updated_at
@@ -82,9 +86,13 @@ updated_at                     category     50
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
-| GET | `/api/todos?page=0&size=10&sort=dueDate&category=&completed=` | 목록 (Spring `Page`). `category`는 부분일치, `sort`는 허용 필드(`id,title,dueDate,completed,category,createdAt,updatedAt`)만 반영되고 그 외는 무시 |
+| GET | `/api/todos?page=0&size=10&sort=dueDate&category=&completed=&q=` | 목록 (Spring `Page`). `category`는 정확일치, `q`는 제목·내용 부분일치(대소문자 무시), `sort`는 허용 필드(`id,title,dueDate,completed,category,priority,createdAt,updatedAt`)만 반영되고 그 외는 무시 |
+| GET | `/api/todos/stats` | 상단 카드용 집계 `{ total, active, completed, overdue, donePct }` |
+| GET | `/api/todos/categories` | 사용자가 쓴 카테고리 목록 (중복 제거, 정렬) |
+| DELETE | `/api/todos/completed` | 완료 항목 일괄 삭제 (204) |
+| PATCH | `/api/todos/reorder` | 본문 `{ ids: [...] }` 순서대로 `sortOrder` 재부여 (204) |
 | GET | `/api/todos/{id}` | 단건 조회 |
-| POST | `/api/todos` | 생성 · 본문 `{ title, content, dueDate, category }` (title 필수) |
+| POST | `/api/todos` | 생성 · 본문 `{ title, content, dueDate, category, priority }` (title 필수, priority 미지정 시 1) |
 | PUT | `/api/todos/{id}` | 수정 |
 | PATCH | `/api/todos/{id}/complete` | 완료 여부 토글 |
 | DELETE | `/api/todos/{id}` | 삭제 (204) |
@@ -94,7 +102,7 @@ updated_at                     category     50
 {
   "id": 1, "title": "발표 자료 준비", "content": "...",
   "dueDate": "2026-08-29T09:00:00", "completed": false,
-  "category": "업무", "dueSoon": true,
+  "category": "업무", "priority": 2, "dueSoon": true,
   "createdAt": "2026-08-28T10:00:00", "updatedAt": "2026-08-28T10:00:00"
 }
 ```

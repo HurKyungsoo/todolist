@@ -15,6 +15,9 @@ public class TodoResponseDto {
     private final LocalDateTime dueDate;
     private final boolean completed;
     private final String category;
+    private final int priority; // 0=낮음, 1=보통, 2=높음
+    private final String recurrence; // null | DAILY | WEEKLY | MONTHLY
+    private final long sortOrder;
     private final boolean dueSoon; // 마감 24시간 이내 && 미완료
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -26,6 +29,9 @@ public class TodoResponseDto {
         this.dueDate = todo.getDueDate();
         this.completed = todo.isCompleted();
         this.category = todo.getCategory();
+        this.priority = todo.getPriority();
+        this.recurrence = todo.getRecurrence();
+        this.sortOrder = todo.getSortOrder();
         this.dueSoon = calculateDueSoon(todo);
         this.createdAt = todo.getCreatedAt();
         this.updatedAt = todo.getUpdatedAt();

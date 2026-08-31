@@ -1,14 +1,30 @@
 import client from './client'
 
 // 목록 (페이지네이션 + 선택 필터). 스프링 Page 객체를 그대로 반환.
-// params: { page, size, sort, category, completed }
-export function fetchTodos({ page = 0, size = 10, sort = 'dueDate', category, completed } = {}) {
+// params: { page, size, sort, category, completed, q }
+export function fetchTodos({ page = 0, size = 10, sort = 'dueDate', category, completed, q } = {}) {
   const params = { page, size, sort }
   if (category) params.category = category
+  if (q) params.q = q
   if (completed !== undefined && completed !== null && completed !== '') {
     params.completed = completed
   }
   return client.get('/todos', { params }).then((r) => r.data)
+}
+
+// 상단 스탯 카드용 집계 { total, active, completed, overdue, donePct }
+export function fetchStats() {
+  return client.get('/todos/stats').then((r) => r.data)
+}
+
+// 사용자가 실제로 쓴 카테고리 목록 (필터 드롭다운 병합용)
+export function fetchCategories() {
+  return client.get('/todos/categories').then((r) => r.data)
+}
+
+// 완료 항목 전부 삭제
+export function clearCompleted() {
+  return client.delete('/todos/completed')
 }
 
 export function getTodo(id) {
@@ -31,4 +47,9 @@ export function toggleComplete(id) {
 
 export function deleteTodo(id) {
   return client.delete(`/todos/${id}`)
+}
+
+// 드래그 정렬 결과 저장 — 새 순서의 id 배열
+export function reorderTodos(ids) {
+  return client.patch('/todos/reorder', { ids })
 }

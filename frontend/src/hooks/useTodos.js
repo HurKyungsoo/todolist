@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { fetchTodos } from '../api/todos'
 import { toMessage } from '../api/client'
 
-const PAGE_SIZE = 10
+// 그룹 뷰(기한 초과/오늘/예정/완료)는 로드된 항목만 집계하므로, 개인 규모에선
+// 한 번에 다 불러와 그룹·개수가 정확하게 맞도록 크게 잡는다. 초과분은 무한 스크롤로 이어 로드.
+const PAGE_SIZE = 100
 
 // 무한 스크롤용 Todo 목록 상태 관리.
 // filters 가 바뀌면 처음부터 다시 로드한다.
@@ -65,13 +67,16 @@ export default function useTodos(filters) {
     setTotal((n) => Math.max(0, n - 1))
   }, [])
 
-  const prependItem = useCallback((todo) => {
-    setItems((prev) => [todo, ...prev])
-    setTotal((n) => n + 1)
+  // 드래그 정렬: 새 id 순서대로 재배열
+  const reorderItems = useCallback((ids) => {
+    setItems((prev) => {
+      const byId = new Map(prev.map((t) => [t.id, t]))
+      return ids.map((id) => byId.get(id)).filter(Boolean)
+    })
   }, [])
 
   return {
     items, total, loading, error, hasNext,
-    loadMore, refresh, patchItem, removeItem, prependItem,
+    loadMore, refresh, patchItem, removeItem, reorderItems,
   }
 }

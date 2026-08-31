@@ -35,6 +35,18 @@ export const ChevronDownIcon = (p) => (
 export const CalendarIcon = (p) => (
   <svg {...base} {...p}><rect x="3" y="4.5" width="18" height="17" rx="2" /><path d="M3 10h18M8 2.5v4M16 2.5v4" /></svg>
 )
+export const SnoozeIcon = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 1.5M9 2.5h6M4.5 5 8 2.5" /></svg>
+)
+export const FlagIcon = (p) => (
+  <svg {...base} {...p}><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z" /><path d="M4 22v-7" /></svg>
+)
+export const RepeatIcon = (p) => (
+  <svg {...base} {...p}><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>
+)
+export const GripIcon = (p) => (
+  <svg {...base} {...p}><circle cx="9" cy="6" r="1" /><circle cx="9" cy="12" r="1" /><circle cx="9" cy="18" r="1" /><circle cx="15" cy="6" r="1" /><circle cx="15" cy="12" r="1" /><circle cx="15" cy="18" r="1" /></svg>
+)
 export const LogoIcon = (p) => (
   <svg {...base} {...p}><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
 )

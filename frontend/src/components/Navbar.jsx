@@ -18,8 +18,13 @@ export default function Navbar() {
         Todolist
       </span>
       <div className="navbar__right">
-        <span className="navbar__user">{user?.username}</span>
-        <button className="btn btn--ghost btn--sm" onClick={handleLogout}>
+        <span className="navbar__user">
+          <span className="navbar__avatar" aria-hidden="true">
+            {(user?.username ?? '?').slice(0, 1).toUpperCase()}
+          </span>
+          {user?.username}
+        </span>
+        <button className="btn btn--soft btn--sm btn--pill" onClick={handleLogout}>
           로그아웃
         </button>
       </div>

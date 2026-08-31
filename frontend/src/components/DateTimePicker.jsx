@@ -44,9 +44,10 @@ function monthGrid(y, m) {
 function dateLabel(d) {
   const now = new Date()
   const dd = Math.round((atMidnight(d) - atMidnight(now)) / 86_400_000)
-  if (dd === 0) return '오늘'
-  if (dd === 1) return '내일'
-  if (dd === -1) return '어제'
+  const md = `${d.getMonth() + 1}/${d.getDate()}`
+  if (dd === 0) return `오늘 · ${md}`
+  if (dd === 1) return `내일 · ${md}`
+  if (dd === -1) return `어제 · ${md}`
   const yearPart = d.getFullYear() === now.getFullYear() ? '' : `${d.getFullYear()}년 `
   return `${yearPart}${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAYS[d.getDay()]})`
 }
@@ -131,6 +132,7 @@ export default function DateTimePicker({ value, onChange }) {
             onClick={() => onChipClick(c.date)}
           >
             {c.label}
+            <span className="dtp-chip__sub">{c.date.getMonth() + 1}/{c.date.getDate()}</span>
           </button>
         ))}
         <button

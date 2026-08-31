@@ -1,7 +1,9 @@
 package com.portfolio.todolist.controller;
 
+import com.portfolio.todolist.dto.ReorderRequestDto;
 import com.portfolio.todolist.dto.TodoRequestDto;
 import com.portfolio.todolist.dto.TodoResponseDto;
+import com.portfolio.todolist.dto.TodoStatsDto;
 import com.portfolio.todolist.security.CustomUserDetails;
 import com.portfolio.todolist.service.TodoService;
 import jakarta.validation.Valid;
@@ -30,7 +32,7 @@ public class TodoController {
 
     // 정렬 허용 필드 화이트리스트 (그 외 값은 무시하고 기본 정렬 적용 → PropertyReferenceException 방지)
     private static final Set<String> SORTABLE = Set.of(
-            "id", "title", "dueDate", "completed", "category", "createdAt", "updatedAt");
+            "id", "title", "dueDate", "completed", "category", "priority", "sortOrder", "createdAt", "updatedAt");
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "dueDate");
 
     private final TodoService todoService;
@@ -47,8 +49,32 @@ public class TodoController {
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Boolean completed,
+            @RequestParam(required = false) String q,
             @PageableDefault(size = 10, sort = "dueDate") Pageable pageable) {
-        return ResponseEntity.ok(todoService.getTodos(principal.getId(), category, completed, sanitize(pageable)));
+        return ResponseEntity.ok(todoService.getTodos(principal.getId(), category, completed, q, sanitize(pageable)));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<TodoStatsDto> getStats(@AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(todoService.getStats(principal.getId()));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getCategories(@AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(todoService.getCategories(principal.getId()));
+    }
+
+    @DeleteMapping("/completed")
+    public ResponseEntity<Void> clearCompleted(@AuthenticationPrincipal CustomUserDetails principal) {
+        todoService.clearCompleted(principal.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/reorder")
+    public ResponseEntity<Void> reorder(@AuthenticationPrincipal CustomUserDetails principal,
+                                        @RequestBody ReorderRequestDto request) {
+        todoService.reorder(principal.getId(), request.ids());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{todoId}")
