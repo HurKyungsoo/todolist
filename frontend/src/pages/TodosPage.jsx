@@ -9,7 +9,7 @@ import useDebounced from '../hooks/useDebounced'
 import { PlusIcon } from '../components/icons'
 import { CATEGORIES } from '../categories'
 import { DEFAULT_PRIORITY } from '../priorities'
-import { formatToday } from '../utils/date'
+import { formatToday, isOverdue } from '../utils/date'
 import { toMessage } from '../api/client'
 import {
   clearCompleted, createTodo, deleteTodo, fetchCategories, fetchStats, reorderTodos, toggleComplete, updateTodo,
@@ -30,6 +30,7 @@ export default function TodosPage() {
     params.get('status') === 'all' ? '' : params.get('status') === 'done' ? 'true' : 'false'
   const category = params.get('cat') ?? ''
   const sort = params.get('sort') ?? 'dueDate'
+  const view = params.get('view') ?? '' // '' | 'overdue' — 상단 스탯 카드의 클라이언트 필터
 
   const patchParams = useCallback((patch) => {
     setParams((prev) => {
@@ -43,8 +44,13 @@ export default function TodosPage() {
   }, [setParams])
 
   const setCompleted = (v) =>
-    patchParams({ status: v === '' ? 'all' : v === 'true' ? 'done' : null })
+    patchParams({ status: v === '' ? 'all' : v === 'true' ? 'done' : null, view: null })
   const setCategory = (v) => patchParams({ cat: v })
+
+  // 상단 스탯 카드 → 관련 목록으로 이동
+  const showAll = () => patchParams({ status: 'all', view: null })
+  const showActive = () => patchParams({ status: null, view: null })
+  const showOverdue = () => patchParams({ status: null, view: 'overdue' })
   const setSort = (v) => patchParams({ sort: v === 'dueDate' ? null : v })
 
   const manualSort = sort === 'sortOrder'
@@ -61,6 +67,12 @@ export default function TodosPage() {
     items, loading, error, hasNext,
     loadMore, refresh, patchItem, removeItem, reorderItems,
   } = useTodos(filters)
+
+  // '기한 초과' 카드: 서버 필터가 없어 로드된 미완료 항목에서 클라이언트로 추린다
+  const visibleItems = useMemo(
+    () => (view === 'overdue' ? items.filter(isOverdue) : items),
+    [items, view],
+  )
 
   const [stats, setStats] = useState(null)
   const loadStats = useCallback(() => {
@@ -262,18 +274,30 @@ export default function TodosPage() {
         </p>
 
         <div className="stat-grid">
-          <div className="stat-card">
+          <button
+            type="button"
+            className={`stat-card${completed === '' && view !== 'overdue' ? ' is-active' : ''}`}
+            onClick={showAll}
+          >
             <div className="stat-card__label">전체</div>
             <div className="stat-card__value">{s.total}</div>
-          </div>
-          <div className="stat-card stat-card--active">
+          </button>
+          <button
+            type="button"
+            className={`stat-card stat-card--active${completed === 'false' && view !== 'overdue' ? ' is-active' : ''}`}
+            onClick={showActive}
+          >
             <div className="stat-card__label">미완료</div>
             <div className="stat-card__value">{s.active}</div>
-          </div>
-          <div className="stat-card stat-card--overdue">
+          </button>
+          <button
+            type="button"
+            className={`stat-card stat-card--overdue${view === 'overdue' ? ' is-active' : ''}`}
+            onClick={showOverdue}
+          >
             <div className="stat-card__label">기한 초과</div>
             <div className="stat-card__value">{s.overdue}</div>
-          </div>
+          </button>
           <div className="stat-card stat-card--done">
             <div className="stat-card__label">완료율</div>
             <div className="stat-card__value">{s.donePct}%</div>
@@ -341,7 +365,7 @@ export default function TodosPage() {
         {actionError && <p className="form-error">{actionError}</p>}
 
         <TodoList
-          items={items}
+          items={visibleItems}
           loading={loading}
           error={error}
           hasNext={hasNext}
