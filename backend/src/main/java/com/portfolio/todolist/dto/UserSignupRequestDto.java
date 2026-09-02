@@ -18,7 +18,7 @@ public class UserSignupRequestDto {
     @Size(min = 4, max = 100, message = "password는 4자 이상이어야 합니다.")
     private String password;
 
-    @NotBlank(message = "email은 필수입니다.")
+    // 이메일은 선택 입력. 값이 있을 때만 형식·길이를 검증한다.
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     @Size(max = 100, message = "email은 100자 이하여야 합니다.")
     private String email;

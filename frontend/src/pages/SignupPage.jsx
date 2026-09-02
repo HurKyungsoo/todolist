@@ -19,7 +19,11 @@ export default function SignupPage() {
     setLoading(true)
     setError('')
     try {
-      await signup(form)
+      await signup({
+        username: form.username,
+        password: form.password,
+        email: form.email.trim() || null, // 이메일은 선택
+      })
       // 가입 성공 시 바로 로그인시켜 목록으로 이동
       await login({ username: form.username, password: form.password })
       navigate('/', { replace: true })
@@ -49,8 +53,8 @@ export default function SignupPage() {
           <input type="password" name="password" value={form.password} onChange={change} required minLength={4} placeholder="4자 이상" />
         </label>
         <label className="field">
-          <span>이메일</span>
-          <input type="email" name="email" value={form.email} onChange={change} required />
+          <span>이메일 <span className="field__opt">(선택)</span></span>
+          <input type="email" name="email" value={form.email} onChange={change} placeholder="비밀번호 찾기 등에 사용" />
         </label>
 
         {error && <p className="form-error">{error}</p>}

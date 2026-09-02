@@ -26,13 +26,18 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("이미 사용중인 username입니다.");
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
+        // 이메일은 선택 입력 — 빈 값은 null 로 정규화하고, 값이 있을 때만 중복 검사
+        String email = request.getEmail();
+        if (email != null && email.isBlank()) {
+            email = null;
+        }
+        if (email != null && userRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 사용중인 email입니다.");
         }
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
+                .email(email)
                 .build();
         return new UserResponseDto(userRepository.save(user));
     }

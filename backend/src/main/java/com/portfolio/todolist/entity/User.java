@@ -22,7 +22,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 100)
+    // 선택 입력. 미입력 시 null 저장. (unique 인덱스는 여러 NULL 허용)
+    @Column(unique = true, length = 100)
     private String email;
 
     @Builder
