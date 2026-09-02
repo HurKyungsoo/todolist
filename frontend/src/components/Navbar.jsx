@@ -8,7 +8,7 @@ export default function Navbar() {
 
   const handleLogout = () => {
     logout()
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true }) // 로그아웃 후 게스트 첫 화면으로
   }
 
   return (
