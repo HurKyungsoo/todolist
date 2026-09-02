@@ -520,6 +520,31 @@ select.pill-input {
 .quick-add__input::placeholder { color: var(--text-3); }
 .quick-add .btn--sm { flex-shrink: 0; }
 
+/* 로그아웃 상태의 '/' (GuestHome) */
+.guest-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--accent-weak) 0%, transparent 60%),
+    var(--surface);
+  border: 1px solid var(--border);
+}
+.guest-cta strong { display: block; font-size: 14px; font-weight: 800; margin-bottom: 3px; }
+.guest-cta span { font-size: 12.5px; color: var(--text-3); line-height: 1.5; }
+.guest-cta .btn { flex-shrink: 0; height: 38px; padding: 0 20px; }
+.pill-input--ghost { display: inline-flex; align-items: center; color: var(--text-3); }
+.quick-add--guest { text-decoration: none; cursor: pointer; }
+.quick-add--guest .quick-add__input { display: flex; align-items: center; color: var(--text-3); }
+.quick-add--guest:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+/* 게스트 화면의 조작 불가 요소는 살짝 흐리게 */
+.page .stat-grid[aria-hidden="true"],
+.page .filter-bar[aria-hidden="true"] { opacity: 0.65; pointer-events: none; }
+
 /* 그룹 섹션 */
 .group { margin-bottom: 26px; }
 .group__head {
